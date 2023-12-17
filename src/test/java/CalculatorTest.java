@@ -6,7 +6,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorTest {
@@ -42,55 +46,70 @@ class CalculatorTest {
 
     @Test
     void testAddTwoPositiveNumbers() {
-        // ARRANGE
         final int a = 2;
         final int b = 3;
 
-        // ACT
         final int sum = calculatorUnderTest.add(a,b);
 
-        // ASSERT
-        assertEquals(5, sum);
+        assertThat(sum).isEqualTo(5);
     }
 
     @Test
     void testMultiplyTwoPositiveNumbers() {
-        // ARRANGE
         final int a = 2;
         final int b = 3;
 
-        // ACT
         final int product = calculatorUnderTest.multiply(a, b);
 
-        // ASSERT
-        assertEquals(6, product);
+        assertThat(product).isEqualTo(6);
     }
 
     @ParameterizedTest(name = "{0} x 0 doit être égal à 0")
     @ValueSource(ints = {1, 2, 42})
     public void multiply_shouldReturnZero_ofZeroWithMultipleIntegers(int arg) {
-        // ARRANGE - Tout est prêt
-
-        // ACT - Multiplier par zéro
         final int actualResult = calculatorUnderTest.multiply(arg, 0);
 
-        // ASSERT - Ca vaut toujours zéro
-        assertEquals(0, actualResult);
+        assertThat(actualResult).isEqualTo(0);
     }
 
     @ParameterizedTest(name = "{0} + {1} doit être égal à {2}")
     @CsvSource({"1, 1, 2", "2, 3, 5", "42, 57, 99"})
     public void add_shouldReturnTheSum_ofMultipleIntegers(int arg1, int arg2, int expectResult) {
-        // ACT
         final int actualResult = calculatorUnderTest.add(arg1, arg2);
 
-        // ASSERT - Ca vaut toujours zéro
-        assertEquals(expectResult, actualResult);
+        assertThat(expectResult).isEqualTo(actualResult);
     }
 
     @Test
     @Timeout(1)
     public void longCalcul_shouldComputeInLessThan1Second() {
         calculatorUnderTest.longCalculation();
+    }
+
+    @Test
+    public void listDigits_shouldRetursTheListOfDigits_ofPositiveInteger() {
+        // GIVEN
+        int number = 95897;
+
+        // WHEN
+        Set<Integer> actualDigits = calculatorUnderTest.digitsSet(number);
+
+        // THEN
+        final Set<Integer> expectedDigits = Stream.of(5, 7,8,9).collect(Collectors.toSet());
+        assertThat(actualDigits).containsExactlyInAnyOrder(9, 5, 7, 8);
+    }
+
+    @Test
+    public void listDigits_shouldRetursTheListOfDigits_ofNegativeInteger() {
+        int number = -12342;
+        Set<Integer> actualDigits = calculatorUnderTest.digitsSet(number);
+        assertThat(actualDigits).containsExactlyInAnyOrder(1, 2, 3, 4);
+    }
+
+    @Test
+    public void listDigits_shouldRetursTheListOfZero_ofZero() {
+        int number = 0;
+        Set<Integer> actualDigits = calculatorUnderTest.digitsSet(number);
+        assertThat(actualDigits).containsExactlyInAnyOrder(0);
     }
 }
