@@ -1,4 +1,6 @@
+import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -7,16 +9,16 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@ExtendWith(LoggingExtension.class)
 class CalculatorTest {
+    private static Instant startedAt;
     private Calculator calculatorUnderTest;
 
-    private static Instant startedAt;
+    private Logger logger;
 
     @BeforeAll
     public static void initStartingTime() {
@@ -32,29 +34,35 @@ class CalculatorTest {
         System.out.println(MessageFormat.format("Durée des tests : {0} ms", duration));
     }
 
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
     @BeforeEach
     public void initCalculator() {
         calculatorUnderTest = new Calculator();
-        System.out.println("Appel avant chaque test");
+        logger.info("Appel avant chaque test");
     }
 
     @AfterEach
     public void undefCalculator() {
-        System.out.printf("Appel après chaque test");
+        logger.info("Appel après chaque test");
         calculatorUnderTest = null;
     }
 
     @Test
+    @Tag("QuatreOperations")
     void testAddTwoPositiveNumbers() {
         final int a = 2;
         final int b = 3;
 
-        final int sum = calculatorUnderTest.add(a,b);
+        final int sum = calculatorUnderTest.add(a, b);
 
         assertThat(sum).isEqualTo(5);
     }
 
     @Test
+    @Tag("QuatreOperations")
     void testMultiplyTwoPositiveNumbers() {
         final int a = 2;
         final int b = 3;
@@ -95,7 +103,7 @@ class CalculatorTest {
         Set<Integer> actualDigits = calculatorUnderTest.digitsSet(number);
 
         // THEN
-        final Set<Integer> expectedDigits = Stream.of(5, 7,8,9).collect(Collectors.toSet());
+        final Set<Integer> expectedDigits = Stream.of(5, 7, 8, 9).collect(Collectors.toSet());
         assertThat(actualDigits).containsExactlyInAnyOrder(9, 5, 7, 8);
     }
 
