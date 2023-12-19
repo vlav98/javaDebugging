@@ -1,3 +1,4 @@
+import com.openclassrooms.testing.calcul.domain.Calculator;
 import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
